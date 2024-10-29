@@ -247,7 +247,69 @@ export default function Home() {
     } catch (e) {
         showErrorAlert("Could not verify assertion", e);
     }
-  } 
+} 
+
+  /**
+ * Sends the credential to the the FIDO2 server for assertion
+ * @param {any} assertedCredential
+ */
+async function verifyAssertionWithServer(assertedCredential) {
+
+    // Move data into Arrays incase it is super long
+    const authData = new Uint8Array(assertedCredential.response.authenticatorData);
+    const clientDataJSON = new Uint8Array(assertedCredential.response.clientDataJSON);
+    const rawId = new Uint8Array(assertedCredential.rawId);
+    const sig = new Uint8Array(assertedCredential.response.signature);
+    const data = {
+        id: assertedCredential.id,
+        rawId: coerceToBase64Url(rawId),
+        type: assertedCredential.type,
+        extensions: assertedCredential.getClientExtensionResults(),
+        response: {
+            authenticatorData: coerceToBase64Url(authData),
+            clientDataJSON: coerceToBase64Url(clientDataJSON),
+            signature: coerceToBase64Url(sig)
+        }
+    };
+
+    let response;
+    try {
+        const res = await fetch("http://localhost:5157/api/makeAssertion", {
+            method: 'POST', // or 'PUT'
+            body: JSON.stringify(data), // data can be `string` or {object}!
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            }
+        });
+
+        response = await res.json();
+    } catch (e) {
+        showErrorAlert("Request to server failed", e);
+        throw e;
+    }
+
+    console.log("Assertion Object", response);
+
+    // show error
+    if (response.status === "error") {
+        console.log("Error doing assertion");
+        console.log(response.errorMessage);
+        showErrorAlert(response.errorMessage);
+        return;
+    }
+
+    // show success message
+    await Swal.fire({
+        title: 'Logged In!',
+        text: 'You\'re logged in successfully.',
+        icon: 'success',
+        timer: 2000
+    });
+
+    // redirect to dashboard to show keys
+    // window.location.href = "/dashboard/" + value("#login-username");
+}
 
   return (
     <div className={styles.page}>
