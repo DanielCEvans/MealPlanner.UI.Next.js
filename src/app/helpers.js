@@ -1,3 +1,5 @@
+import Swal from "sweetalert2";
+
 export function coerceToArrayBuffer (thing, name) {
     if (typeof thing === "string") {
         // base64url to base64
@@ -40,7 +42,6 @@ export function showErrorAlert(message, error) {
         title: 'Error',
         text: message,
         footer: footermsg
-        //footer: '<a href>Why do I have this issue?</a>'
     })
 }
 
