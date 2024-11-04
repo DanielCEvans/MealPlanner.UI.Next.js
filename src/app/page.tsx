@@ -159,7 +159,7 @@ export default function Home() {
   }
 
   async function registerCredentialWithServer(formData) {
-    let response = await fetch('http://localhost:5157/api/makeCredential', {
+    const response = await fetch('http://localhost:5157/api/makeCredential', {
         method: 'POST', // or 'PUT'
         body: JSON.stringify(formData), // data can be `string` or {object}!
         headers: {
@@ -169,7 +169,7 @@ export default function Home() {
         credentials: 'include'
     });
 
-    let data = await response.json();
+    const data = await response.json();
 
     return data;
   }
