@@ -1,7 +1,11 @@
+'use-client'
+
+import { Button } from "@mui/material"
+
 export default function Home(){
     return (
         <div>
-            Home Page
+            <Button variant="contained">Hello World</Button>
         </div>
     )
 }
